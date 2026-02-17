@@ -1,30 +1,25 @@
-import mongoose from "mongoose";
+﻿import mongoose from 'mongoose';
 
 async function connectDB(mongoURI) {
-    try
-    {  
-        const connection = await mongoose.connect(mongoURI, {
-            serverSelectionTimeoutMS: 5000, // timeout de connexion de 5 secondes
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
-        console.log(`MongoDB connecté : ${connection.connection.host}`);
-    } catch (error) {
-        console.error('Erreur de connexion à MongoDB :', error.message);
-        process.exit(1); // quitter le processus avec une erreur
-        // on peut mettre des choix different selon les cas d'erreur (ex: retry, fallback, etc.)
-    }
+    const connection = await mongoose.connect(mongoURI, {
+        serverSelectionTimeoutMS: 5000,
+    });
+
+    console.log(`[DB] Connecte a MongoDB (${connection.connection.host}:${connection.connection.port})`);
+    return connection;
 }
 
-// gestion des événements de connexion
+// Gestion des evenements de connexion
 mongoose.connection.on('connected', () => {
-    console.log('MongoDB connecté avec succès');
+    console.log('[DB] Etat: connected');
 });
 
 mongoose.connection.on('error', (err) => {
-    console.error('Erreur de connexion à MongoDB :', err.message);
+    console.error(`[DB] Etat: error - ${err.message}`);
 });
 
 mongoose.connection.on('disconnected', () => {
-    console.warn('MongoDB déconnecté');
+    console.warn('[DB] Etat: disconnected');
 });
+
+export default connectDB;

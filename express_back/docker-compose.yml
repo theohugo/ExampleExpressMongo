@@ -15,12 +15,19 @@ services:
       - "27017:27017"
 
   mongo-express:
-    image: mongo-express:1.2.0
+    image: mongo-express:latest
     restart: unless-stopped
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: mongo_user
       ME_CONFIG_MONGODB_ADMINPASSWORD: example1234
       ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: pass1234
+    healthcheck:
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:8081" ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
     ports:
       - "8081:8081"
     depends_on:
@@ -35,7 +42,7 @@ services:
       - PORT=5000
       - MONGO_URI=mongodb://mongo_user:example1234@mongo:27017/?authSource=admin
     ports:
-      - "5000:5000"
+      - "${BACKEND_PORT:-5000}:5000"
     depends_on:
       - mongo
 
