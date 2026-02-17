@@ -1,0 +1,3 @@
+cd .\express_back\
+npm init -y
+npm install express mongoose dotenv cors
