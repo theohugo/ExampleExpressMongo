@@ -1,91 +1,59 @@
-# Express Back - Docker Compose
+# Express Back - Docker + MongoDB
 
-Ce dossier contient une configuration Docker pour lancer le backend Express et une base MongoDB (avec mongo-express pour l'UI).
+Ce dossier lance:
+- `backend` (Express)
+- `mongo` (MongoDB)
+- `mongo-express` (UI MongoDB)
 
-Prerequis
-- Docker installé
-- Docker Compose (ou `docker compose` v2 intégré à Docker)
+## 1) Variables d'environnement
 
-Démarrage rapide
+Copie le template:
 
-Depuis le répertoire `express_back`, construisez et lancez les services :
+```powershell
+Copy-Item .env.example .env
+```
 
-```bash
+Variables principales dans `.env`:
+- `NODE_ENV`: environnement Node (`development`, `production`)
+- `EXPRESS_HOST`: host du serveur Express dans le conteneur (`0.0.0.0`)
+- `PORT`: port interne Express (laisse `5000`)
+- `MONGO_URI`: URI Mongo pour execution locale (`npm start`)
+- `MONGO_URI_DOCKER`: URI Mongo pour le conteneur backend
+- `BACKEND_PORT`: port expose sur ta machine (ex: `5001`)
+- `MONGO_PORT`: port expose Mongo sur ta machine
+- `MONGO_EXPRESS_PORT`: port expose Mongo Express sur ta machine
+- `MONGO_INITDB_ROOT_USERNAME`: user admin Mongo
+- `MONGO_INITDB_ROOT_PASSWORD`: password admin Mongo
+- `MONGO_EXPRESS_USERNAME`: login UI mongo-express
+- `MONGO_EXPRESS_PASSWORD`: password UI mongo-express
+
+## 2) Démarrage Docker
+
+Depuis `express_back/`:
+
+```powershell
 docker compose up --build
 ```
 
-ou (ancienne syntaxe) :
+Accès:
+- API: `http://localhost:${BACKEND_PORT}`
+- Mongo Express: `http://localhost:${MONGO_EXPRESS_PORT}`
 
-```bash
-docker-compose up --build
-```
+## 3) Logs
 
-Services exposés
-- API backend : http://localhost:5000
-- mongo-express (UI) : http://localhost:8081
-- MongoDB : port 27017
-
-Variables d'environnement
-Copiez `.env.example` en `.env` si vous voulez personnaliser l'hôte/le port la connexion Mongo.
-
-Fichier `docker-compose.yml`
-- `mongo` : image officielle Mongo, variables `MONGO_INITDB_ROOT_USERNAME`/`MONGO_INITDB_ROOT_PASSWORD` définies.
-- `mongo-express` : interface web pour inspecter la BDD sur le port `8081`.
-- `backend` : image construite depuis ce dossier, variable `MONGO_URI` configurée pour se connecter au service `mongo`.
-
-Debug & journalisation
-- Voir les logs en temps réel :
-
-```bash
+```powershell
 docker compose logs -f backend
+docker compose logs -f mongo-express
+docker compose logs -f mongo
 ```
 
-- Ouvrir un terminal dans le conteneur backend :
+## 4) Lancement local (sans Docker)
 
-```bash
-docker compose exec backend sh
-```
+Assure-toi que MongoDB tourne sur ta machine puis:
 
-MongoDB - connexion et import (exemples depuis `mongodb/commandes.md`)
-- Ouvrir un shell vers le conteneur MongoDB :
-
-```bash
-docker compose exec mongo bash
-```
-
-- Se connecter avec `mongosh` (depuis l'extérieur ou l'intérieur du conteneur) :
-
-```bash
-mongosh "mongodb://mongo_user:example1234@localhost:27017/?authSource=admin"
-```
-
-- Importer des fichiers JSON/CSV (exemples) :
-
-```bash
-# si vous avez placé des fichiers à importer sous ./mongodb/import/datasource
-docker compose exec mongo \
-  mongoimport --jsonArray --db demoDatabase --collection volcans --file /import/datasource/volcano.json \
-    --username mongo_user --password example1234 --authenticationDatabase admin
-
-docker compose exec mongo \
-  mongoimport --type csv --headerline --db demoDatabase --collection airbnb --file /import/datasource/airbnb.csv \
-    --username mongo_user --password example1234 --authenticationDatabase admin
-```
-
-Astuce : si vous utilisez `mongo-express`, les collections et données sont visibles immédiatement sur http://localhost:8081.
-
-Arrêt et nettoyage
-
-```bash
-docker compose down -v
-```
-
-Notes
-- Si votre `server.js` utilise la syntaxe `import`, ce projet inclut `"type": "module"` dans `package.json` et le conteneur lance l'app avec `npm start`.
-- Si vous voulez lancer l'app localement (sans Docker) :
-
-```bash
-cd express_back
+```powershell
 npm install
 npm start
 ```
+
+Le backend lit `MONGO_URI` depuis `.env`.
