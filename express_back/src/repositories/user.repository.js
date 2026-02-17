@@ -10,14 +10,14 @@ class UserRepository {
     }
 
     async findById(id) {
-        return User.findById(id);
+        return User.findById(id).select('-__v');
     }
 
     async updateById(id, updateData) {
         return User.findByIdAndUpdate(id, updateData, {
             new: true,
             runValidators: true,
-        });
+        }).select('-__v');
     }
 
     async deleteById(id) {
