@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
+        maxlength: [50, 'Le nom ne peut pas dépasser 50 caractères'],
     },
     email : {
         type: String,
@@ -12,11 +13,12 @@ const userSchema = new mongoose.Schema({
         unique: true,
         lowercase: true,
         trim: true,
+        match: [/\S+@\S+\.\S+/, 'Email invalide'],
     },
     age : {
         type: Number,
         required: true,
-        min: 0,
+        min: [0, 'L\'âge doit être positif'],
     },
     createdAt : {
         type: Date,
