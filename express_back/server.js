@@ -3,13 +3,19 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import ApiResponse from './src/utils/apiResponse.js';
 import user_router from './src/routes/user.routes.js';
+import beerRouter from './src/routes/beer.routes.js';
+import orderRouter from './src/routes/order.routes.js';
+import cartRouter from './src/routes/cart.routes.js';
 import connectDB from './src/config/database.js';
+import beerSeedService from './src/service/beerSeed.service.js';
 
 dotenv.config();
 
 const EXPRESS_HOST = process.env.EXPRESS_HOST || 'localhost';
 const PORT = Number(process.env.PORT) || 5000;
 const MONGO_URI = process.env.MONGO_URI;
+const MONGO_DB_NAME = process.env.MONGO_DB_NAME || 'demoDatabase';
+const AUTO_SEED_BEERS = process.env.AUTO_SEED_BEERS !== 'false';
 
 const app = express();
 
@@ -33,6 +39,11 @@ app.get('/', (req, res) => {
             endpoints: {
                 users: `${apiBaseUrl}/api/users`,
                 stats: `${apiBaseUrl}/api/users/stats`,
+                beers: `${apiBaseUrl}/api/beers`,
+                beerStats: `${apiBaseUrl}/api/beers/stats`,
+                orders: `${apiBaseUrl}/api/orders`,
+                orderStats: `${apiBaseUrl}/api/orders/stats`,
+                carts: `${apiBaseUrl}/api/carts/{cartId}`,
                 mongoExpress: `http://${EXPRESS_HOST}:8081`,
             },
         }
@@ -40,6 +51,9 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/users', user_router);
+app.use('/api/beers', beerRouter);
+app.use('/api/orders', orderRouter);
+app.use('/api/carts', cartRouter);
 
 app.use((req, res) => {
     ApiResponse.notFound(res, 'Route non trouvee');
@@ -55,8 +69,12 @@ async function bootstrap() {
         }
 
         console.log('[BOOT] Connexion a MongoDB en cours...');
-        await connectDB(MONGO_URI);
+        await connectDB(MONGO_URI, { dbName: MONGO_DB_NAME });
         console.log('[BOOT] Connexion MongoDB OK');
+
+        if (AUTO_SEED_BEERS) {
+            await beerSeedService.seedIfEmpty();
+        }
 
         app.listen(PORT, () => {
             console.log(`[BOOT] Serveur Express demarre sur http://${EXPRESS_HOST}:${PORT}`);
