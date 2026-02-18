@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 
 const orderItemSchema = new mongoose.Schema({
+    seller: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
     beer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Beer',
@@ -85,6 +90,7 @@ const orderSchema = new mongoose.Schema({
 
 orderSchema.index({ createdAt: -1 });
 orderSchema.index({ status: 1 });
+orderSchema.index({ 'items.seller': 1, createdAt: -1 });
 
 const Order = mongoose.model('Order', orderSchema);
 export default Order;

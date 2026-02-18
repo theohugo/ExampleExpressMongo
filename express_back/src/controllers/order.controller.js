@@ -7,6 +7,21 @@ function isValidObjectId(id) {
     return mongoose.Types.ObjectId.isValid(id);
 }
 
+function parsePagination(query) {
+    return {
+        page: Math.max(1, Number(query.page) || 1),
+        limit: Math.min(100, Math.max(1, Number(query.limit) || 20)),
+    };
+}
+
+function buildOrderFilters(query) {
+    const filters = {};
+    if (query.status) {
+        filters.status = query.status;
+    }
+    return filters;
+}
+
 class OrderController {
     async create(req, res) {
         try {
@@ -38,17 +53,37 @@ class OrderController {
 
     async getAll(req, res) {
         try {
-            const page = Math.max(1, Number(req.query.page) || 1);
-            const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 20));
-            const status = req.query.status;
-
-            const filters = {};
-            if (status) filters.status = status;
+            const { page, limit } = parsePagination(req.query);
+            const filters = buildOrderFilters(req.query);
 
             const result = await orderRepository.findAll(filters, page, limit);
             return ApiResponse.success(res, 'Liste des commandes recuperee', result);
         } catch (error) {
             return ApiResponse.error(res, 'Erreur lors de la recuperation des commandes', null, 500, error.message);
+        }
+    }
+
+    async getSellerOrders(req, res) {
+        try {
+            const { page, limit } = parsePagination(req.query);
+            const filters = buildOrderFilters(req.query);
+
+            const result = await orderRepository.findAllBySeller(req.currentUser._id, filters, page, limit);
+            return ApiResponse.success(res, 'Liste des commandes vendeur recuperee', result);
+        } catch (error) {
+            return ApiResponse.error(res, 'Erreur lors de la recuperation des commandes vendeur', null, 500, error.message);
+        }
+    }
+
+    async getClientOrders(req, res) {
+        try {
+            const { page, limit } = parsePagination(req.query);
+            const filters = buildOrderFilters(req.query);
+
+            const result = await orderRepository.findAllByClient(req.currentUser._id, filters, page, limit);
+            return ApiResponse.success(res, 'Liste des commandes client recuperee', result);
+        } catch (error) {
+            return ApiResponse.error(res, 'Erreur lors de la recuperation des commandes client', null, 500, error.message);
         }
     }
 

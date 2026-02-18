@@ -50,6 +50,45 @@ function buildBeerFilters(query) {
 }
 
 class BeerController {
+    async create(req, res) {
+        try {
+            const createdBeer = await beerRepository.create({
+                ...req.body,
+                vendeur: req.currentUser._id,
+            });
+
+            return ApiResponse.created(res, 'Biere creee', createdBeer);
+        } catch (error) {
+            if (error.name === 'ValidationError') {
+                return ApiResponse.badRequest(res, error.message);
+            }
+            return ApiResponse.error(res, 'Erreur lors de la creation de la biere', null, 500, error.message);
+        }
+    }
+
+    async update(req, res) {
+        try {
+            const { id } = req.params;
+            if (!isValidObjectId(id)) {
+                return ApiResponse.badRequest(res, "L identifiant biere est invalide");
+            }
+
+            const payload = { ...req.body };
+            delete payload.vendeur;
+
+            const updatedBeer = await beerRepository.updateById(id, payload);
+            if (!updatedBeer) {
+                return ApiResponse.notFound(res, 'Biere non trouvee');
+            }
+            return ApiResponse.success(res, 'Biere mise a jour', updatedBeer);
+        } catch (error) {
+            if (error.name === 'ValidationError') {
+                return ApiResponse.badRequest(res, error.message);
+            }
+            return ApiResponse.error(res, 'Erreur lors de la mise a jour de la biere', null, 500, error.message);
+        }
+    }
+
     async getAll(req, res) {
         try {
             const page = Math.max(1, Number(req.query.page) || 1);

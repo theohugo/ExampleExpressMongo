@@ -59,6 +59,7 @@ class OrderBuilderService {
             totalAmount += lineTotal;
 
             orderItems.push({
+                seller: beer.vendeur,
                 beer: beer._id,
                 beerName: beer.nom_article,
                 unitPriceTtc: beer.prix_15,

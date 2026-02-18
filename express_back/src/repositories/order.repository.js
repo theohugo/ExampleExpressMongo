@@ -8,7 +8,7 @@ class OrderRepository {
     async findAll(filters = {}, page = 1, limit = 20) {
         const skip = (page - 1) * limit;
         const [items, total] = await Promise.all([
-            Order.find(filters).sort({ createdAt: -1 }).skip(skip).limit(limit),
+            Order.find(filters).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
             Order.countDocuments(filters),
         ]);
 
@@ -23,8 +23,24 @@ class OrderRepository {
         };
     }
 
+    async findAllBySeller(sellerId, filters = {}, page = 1, limit = 20) {
+        const mergedFilters = {
+            ...filters,
+            'items.seller': sellerId,
+        };
+        return this.findAll(mergedFilters, page, limit);
+    }
+
+    async findAllByClient(clientId, filters = {}, page = 1, limit = 20) {
+        const mergedFilters = {
+            ...filters,
+            client: clientId,
+        };
+        return this.findAll(mergedFilters, page, limit);
+    }
+
     async findById(id) {
-        return Order.findById(id);
+        return Order.findById(id).lean();
     }
 
     async updateStatusById(id, status) {
