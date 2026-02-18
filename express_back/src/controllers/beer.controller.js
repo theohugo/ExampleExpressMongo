@@ -1,10 +1,7 @@
-import mongoose from 'mongoose';
 import ApiResponse from '../utils/apiResponse.js';
 import beerRepository from '../repositories/beer.repository.js';
-
-function isValidObjectId(id) {
-    return mongoose.Types.ObjectId.isValid(id);
-}
+import { isValidObjectId } from '../utils/mongo.util.js';
+import { parsePagination } from '../utils/pagination.util.js';
 
 function buildBeerFilters(query) {
     const {
@@ -91,8 +88,7 @@ class BeerController {
 
     async getAll(req, res) {
         try {
-            const page = Math.max(1, Number(req.query.page) || 1);
-            const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 20));
+            const { page, limit } = parsePagination(req.query);
             const filters = buildBeerFilters(req.query);
 
             const result = await beerRepository.findAll(filters, page, limit);

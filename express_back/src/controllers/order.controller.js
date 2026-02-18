@@ -1,18 +1,8 @@
-import mongoose from 'mongoose';
 import ApiResponse from '../utils/apiResponse.js';
 import orderRepository from '../repositories/order.repository.js';
 import orderBuilderService from '../service/orderBuilder.service.js';
-
-function isValidObjectId(id) {
-    return mongoose.Types.ObjectId.isValid(id);
-}
-
-function parsePagination(query) {
-    return {
-        page: Math.max(1, Number(query.page) || 1),
-        limit: Math.min(100, Math.max(1, Number(query.limit) || 20)),
-    };
-}
+import { isValidObjectId } from '../utils/mongo.util.js';
+import { parsePagination } from '../utils/pagination.util.js';
 
 function buildOrderFilters(query) {
     const filters = {};

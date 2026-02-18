@@ -1,5 +1,7 @@
 import express from 'express';
 import userController from '../controllers/user.controller.js';
+import { validate } from '../middlewares/validate.middleware.js';
+import { validateCreateUserPayload, validateUpdateUserPayload } from '../validators/user.validator.js';
 
 
 const user_router = express.Router();
@@ -14,10 +16,10 @@ user_router.get('/stats', userController.getStats);
 user_router.get('/:id', userController.getById);
 
 // POST http://localhost:5000/api/users
-user_router.post('/', userController.create);
+user_router.post('/', validate(validateCreateUserPayload), userController.create);
 
 // PUT http://localhost:5000/api/users/:id
-user_router.put('/:id', userController.update);
+user_router.put('/:id', validate(validateUpdateUserPayload), userController.update);
 
 // DELETE http://localhost:5000/api/users/:id
 user_router.delete('/:id', userController.remove);
