@@ -1,8 +1,9 @@
 ﻿import mongoose from 'mongoose';
 
-async function connectDB(mongoURI) {
+async function connectDB(mongoURI, options = {}) {
     const connection = await mongoose.connect(mongoURI, {
         serverSelectionTimeoutMS: 5000,
+        ...options,
     });
 
     console.log(`[DB] Connecte a MongoDB (${connection.connection.host}:${connection.connection.port})`);

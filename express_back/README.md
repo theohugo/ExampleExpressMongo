@@ -57,3 +57,20 @@ npm start
 ```
 
 Le backend lit `MONGO_URI` depuis `.env`.
+
+## 5) Endpoints principaux
+
+- `GET /api/beers`: catalogue de bieres (filtres: `q`, `type`, `couleur`, `marque`, `minPrice`, `maxPrice`, `page`, `limit`)
+- `GET /api/beers/:id`: detail d une biere
+- `GET /api/beers/stats`: statistiques catalogue
+- `POST /api/orders`: creation d une commande
+- `GET /api/orders`: liste des commandes (filtre: `status`)
+- `GET /api/orders/:id`: detail d une commande
+- `PATCH /api/orders/:id/status`: changement de statut (`pending`, `paid`, `preparing`, `shipped`, `cancelled`)
+- `GET /api/orders/stats`: statistiques commandes
+- `GET /api/carts/:cartId`: recuperer un panier
+- `POST /api/carts/:cartId/items`: ajouter un article (`beerId`, `quantity`)
+- `PUT /api/carts/:cartId/items/:beerId`: fixer la quantite (`quantity`, `0` pour retirer)
+- `DELETE /api/carts/:cartId/items/:beerId`: supprimer un article
+- `DELETE /api/carts/:cartId`: vider le panier
+- `POST /api/carts/:cartId/checkout`: convertir le panier en commande
