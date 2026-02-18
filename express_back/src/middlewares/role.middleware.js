@@ -35,7 +35,7 @@ export async function loadCurrentUser(req, res, next) {
 
 export function requireRole(role) {
     return async (req, res, next) => {
-        return loadCurrentUser(req, res, () => {
+        await loadCurrentUser(req, res, async () => {
             if (req.currentUser.role !== role) {
                 return ApiResponse.unauthorized(res, `Acces reserve au role ${role}`);
             }
