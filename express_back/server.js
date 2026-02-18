@@ -8,6 +8,8 @@ import orderRouter from './src/routes/order.routes.js';
 import cartRouter from './src/routes/cart.routes.js';
 import connectDB from './src/config/database.js';
 import beerSeedService from './src/service/beerSeed.service.js';
+import { requestLogger, notFoundHandler } from './src/middlewares/app.middleware.js';
+import { errorHandler } from './src/middlewares/error.middleware.js';
 
 dotenv.config();
 
@@ -23,10 +25,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-    console.log(`[HTTP] ${req.method} ${req.path} - ${new Date().toISOString()}`);
-    next();
-});
+app.use(requestLogger);
 
 app.get('/', (req, res) => {
     const apiBaseUrl = `http://${EXPRESS_HOST}:${PORT}`;
@@ -55,9 +54,8 @@ app.use('/api/beers', beerRouter);
 app.use('/api/orders', orderRouter);
 app.use('/api/carts', cartRouter);
 
-app.use((req, res) => {
-    ApiResponse.notFound(res, 'Route non trouvee');
-});
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 async function bootstrap() {
     try {

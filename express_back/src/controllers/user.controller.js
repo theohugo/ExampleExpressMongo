@@ -1,10 +1,6 @@
-import mongoose from 'mongoose';
 import ApiResponse from '../utils/apiResponse.js';
 import userRepository from '../repositories/user.repository.js';
-
-function isValidObjectId(id) {
-    return mongoose.Types.ObjectId.isValid(id);
-}
+import { isValidObjectId } from '../utils/mongo.util.js';
 
 class UserController {
     async getAll(req, res) {

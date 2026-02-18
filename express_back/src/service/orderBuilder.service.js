@@ -1,9 +1,5 @@
-import mongoose from 'mongoose';
 import Beer from '../model/beer.model.js';
-
-function isValidObjectId(id) {
-    return mongoose.Types.ObjectId.isValid(id);
-}
+import { isValidObjectId } from '../utils/mongo.util.js';
 
 function toQuantity(value) {
     const quantity = Number(value);
@@ -59,6 +55,7 @@ class OrderBuilderService {
             totalAmount += lineTotal;
 
             orderItems.push({
+                seller: beer.vendeur,
                 beer: beer._id,
                 beerName: beer.nom_article,
                 unitPriceTtc: beer.prix_15,

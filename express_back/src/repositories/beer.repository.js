@@ -1,6 +1,10 @@
 import Beer from '../model/beer.model.js';
 
 class BeerRepository {
+    async create(beerData) {
+        return Beer.create(beerData);
+    }
+
     async createMany(beerDataList) {
         return Beer.insertMany(beerDataList, { ordered: false });
     }
@@ -10,13 +14,13 @@ class BeerRepository {
     }
 
     async findById(id) {
-        return Beer.findById(id).select('-__v');
+        return Beer.findById(id).select('-__v').lean();
     }
 
     async findAll(filters = {}, page = 1, limit = 20) {
         const skip = (page - 1) * limit;
         const [items, total] = await Promise.all([
-            Beer.find(filters).sort({ nom_article: 1 }).skip(skip).limit(limit),
+            Beer.find(filters).sort({ nom_article: 1 }).skip(skip).limit(limit).lean(),
             Beer.countDocuments(filters),
         ]);
 
@@ -54,6 +58,17 @@ class BeerRepository {
             byType,
             byColor,
         };
+    }
+
+    async updateById(id, updateData) {
+        return Beer.findByIdAndUpdate(
+            id,
+            updateData,
+            {
+                new: true,
+                runValidators: true,
+            }
+        ).select('-__v');
     }
 }
 

@@ -30,6 +30,35 @@ docker compose logs -f mongo
 docker compose logs -f mongo-express
 ```
 
+## Lancer Les Tests
+
+Depuis `express_back`:
+
+```powershell
+cd express_back
+npm test
+```
+
+Ou depuis la racine:
+
+```powershell
+npm --prefix express_back test
+```
+
+## Generer Des Fixtures
+
+Depuis la racine:
+
+```powershell
+npm --prefix express_back run fixtures
+```
+
+Version reset complet (supprime `orders`, `carts`, `beer` et les users `fixture.*` avant regeneration):
+
+```powershell
+npm --prefix express_back run fixtures:reset
+```
+
 ## Configuration (Optionnel)
 
 Le `docker-compose.yml` racine contient des valeurs par defaut.
@@ -68,13 +97,25 @@ Tu peux les surcharger avec un fichier `.env` a la racine:
 - `GET /api/beers`
 - `GET /api/beers/:id`
 - `GET /api/beers/stats`
+- `POST /api/beers` (VENDEUR uniquement, via `x-user-id`)
+- `PUT /api/beers/:id` (VENDEUR uniquement, via `x-user-id`)
 
 `orders`
 - `POST /api/orders`
 - `GET /api/orders`
+- `GET /api/orders/seller` (VENDEUR uniquement, via `x-user-id`)
+- `GET /api/orders/client` (CLIENT uniquement, via `x-user-id`)
 - `GET /api/orders/:id`
 - `PATCH /api/orders/:id/status`
 - `GET /api/orders/stats`
+
+## Auth Role (Simple)
+
+Pour les routes protegees, transmettre l'identifiant utilisateur:
+
+```http
+x-user-id: <mongo_user_id>
+```
 
 `carts`
 - `GET /api/carts/:cartId`
