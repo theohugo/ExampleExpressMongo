@@ -58,7 +58,27 @@ npm start
 
 Le backend lit `MONGO_URI` depuis `.env`.
 
-## 5) Endpoints principaux
+## 5) Fonctionnalites metier
+
+Le backend couvre bien les cas suivants:
+- CRUD `users` (creer, lire, modifier, supprimer)
+- CRUD `carts` (panier) avec gestion des lignes
+- Creation de `orders` (commandes)
+- Conversion d un panier en commande via le checkout
+
+Flux principal:
+1. Le client ajoute/modifie des articles dans `/api/carts/:cartId`
+2. Le client valide avec `POST /api/carts/:cartId/checkout`
+3. Le backend cree une commande dans `orders` et vide le panier
+
+## 6) Endpoints principaux
+
+- `GET /api/users`: liste des utilisateurs
+- `GET /api/users/:id`: detail utilisateur
+- `POST /api/users`: creation utilisateur
+- `PUT /api/users/:id`: modification utilisateur
+- `DELETE /api/users/:id`: suppression utilisateur
+- `GET /api/users/stats`: statistiques utilisateurs
 
 - `GET /api/beers`: catalogue de bieres (filtres: `q`, `type`, `couleur`, `marque`, `minPrice`, `maxPrice`, `page`, `limit`)
 - `GET /api/beers/:id`: detail d une biere
