@@ -18,9 +18,12 @@ beerRouter.post('/', requireRole('VENDEUR'), validate(validateCreateBeerPayload)
 // PUT /api/beers/:id
 beerRouter.put('/:id', requireRole('VENDEUR'), validate(validateUpdateBeerPayload), beerController.update);
 
+// GET /api/beers/colors
+beerRouter.get('/colors', beerController.getColors);
+
 // GET /api/beers/:id
 beerRouter.get('/:id', beerController.getById);
 
-// GET /api/beers/color
+
 
 export default beerRouter;

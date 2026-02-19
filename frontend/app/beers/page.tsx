@@ -3,10 +3,11 @@ import { Beer } from '@/types';
 import BeerCard from '@/components/BeerCard';
 import Link from 'next/link';
 import { Search } from 'lucide-react';
+import ColorFilter from '@/components/ColorFilter';
 
 const ITEMS_PER_PAGE = 12;
 
-async function getBeers(page: number = 1, limit: number = ITEMS_PER_PAGE, q: string = ''): Promise<{
+async function getBeers(page: number = 1, limit: number = ITEMS_PER_PAGE, q: string = '', couleur: string = ''): Promise<{
   items: Beer[];
   pagination: { page: number; limit: number; total: number; totalPages: number };
 }> {
@@ -18,6 +19,7 @@ async function getBeers(page: number = 1, limit: number = ITEMS_PER_PAGE, q: str
   if (q.trim()) {
     queryParams.append('q', q.trim());
   }
+  if (couleur.trim()) queryParams.append('couleur', couleur.trim());
 
   try {
     const res = await fetch(
@@ -41,13 +43,13 @@ async function getBeers(page: number = 1, limit: number = ITEMS_PER_PAGE, q: str
 export default async function BeersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; q?: string }>;
+  searchParams: Promise<{ page?: string; q?: string; couleur?: string }>;
 }) {
   const params = await searchParams;
   const currentPage = Number(params.page) || 1;
   const searchQuery = params.q || '';
-
-  const { items: beers, pagination } = await getBeers(currentPage, ITEMS_PER_PAGE, searchQuery);
+    const colorQuery = params.couleur || '';
+  const { items: beers, pagination } = await getBeers(currentPage, ITEMS_PER_PAGE, searchQuery, colorQuery);
 
   const totalPages = pagination.totalPages || 1;
 
@@ -59,6 +61,11 @@ export default async function BeersPage({
           <h1 className="text-4xl font-bold text-gray-900">
             Catalogue complet
           </h1>
+
+          {/* Filtre couleur multi-sélection */}
+            <ColorFilter
+                currentColors={params.couleur ? params.couleur.split(',') : []}
+            />
 
           {/* Barre de recherche */}
           <form
