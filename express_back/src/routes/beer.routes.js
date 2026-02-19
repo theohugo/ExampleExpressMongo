@@ -21,4 +21,6 @@ beerRouter.put('/:id', requireRole('VENDEUR'), validate(validateUpdateBeerPayloa
 // GET /api/beers/:id
 beerRouter.get('/:id', beerController.getById);
 
+// GET /api/beers/color
+
 export default beerRouter;

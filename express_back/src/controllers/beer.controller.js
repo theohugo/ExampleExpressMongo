@@ -1,3 +1,4 @@
+import Beer from '../model/beer.model.js';
 import ApiResponse from '../utils/apiResponse.js';
 import beerRepository from '../repositories/beer.repository.js';
 import { isValidObjectId } from '../utils/mongo.util.js';
@@ -86,17 +87,49 @@ class BeerController {
         }
     }
 
-    async getAll(req, res) {
-        try {
-            const { page, limit } = parsePagination(req.query);
-            const filters = buildBeerFilters(req.query);
+async getAll(req, res) {
+  try {
+    const { page = 1, limit = 20, q = '' } = req.query;
 
-            const result = await beerRepository.findAll(filters, page, limit);
-            return ApiResponse.success(res, 'Liste des bieres recuperee', result);
-        } catch (error) {
-            return ApiResponse.error(res, 'Erreur lors de la recuperation des bieres', null, 500, error.message);
-        }
+    const query = {};
+
+    if (q && q.trim() !== '') {
+      const searchRegex = new RegExp(q.trim(), 'i');
+      query.$or = [
+        { nom_article: searchRegex },
+        { nom_marque: searchRegex },
+        { type: searchRegex },
+      ];
     }
+
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const items = await Beer.find(query)
+      .skip(skip)
+      .limit(Number(limit))
+      .lean();
+
+    const total = await Beer.countDocuments(query);
+
+    res.json({
+      success: true,
+      message: q ? 'Résultats de recherche' : 'Liste des bières récupérée',
+      data: {
+        items,
+        pagination: {
+          page: Number(page),
+          limit: Number(limit),
+          total,
+          totalPages: Math.ceil(total / Number(limit)) || 1,
+        },
+      },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error('Erreur dans getAll:', err); // ← ajoute ce log pour debug
+    res.status(500).json({ success: false, message: err.message || 'Erreur serveur' });
+  }
+}
 
     async getById(req, res) {
         try {
