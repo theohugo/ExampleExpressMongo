@@ -1,3 +1,5 @@
+import bcrypt from 'bcrypt';
+import User from '../model/user.model.js';
 import ApiResponse from '../utils/apiResponse.js';
 import userRepository from '../repositories/user.repository.js';
 import { isValidObjectId } from '../utils/mongo.util.js';
@@ -41,7 +43,14 @@ class UserController {
 
     async create(req, res) {
         try {
-            const createdUser = await userRepository.create(req.body);
+            const { password, ...rest } = req.body;
+
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            const createdUser = await userRepository.create({
+                ...rest,
+                password: hashedPassword
+            });
             return ApiResponse.created(res, 'Utilisateur cree', createdUser);
         } catch (error) {
             if (error.name === 'ValidationError') {
@@ -93,6 +102,33 @@ class UserController {
             return ApiResponse.success(res, 'Utilisateur supprime', deletedUser);
         } catch (error) {
             return ApiResponse.error(res, "Erreur lors de la suppression de l'utilisateur", null, 500, error.message);
+        }
+    }
+
+    async login(req, res) {
+        try {
+            const { email, password } = req.body;
+
+            if (!email || !password) {
+                return ApiResponse.badRequest(res, "Email et mot de passe requis");
+            }
+
+            const user = await User.findOne({ email });
+
+            if (!user) {
+                return ApiResponse.badRequest(res, "Email ou mot de passe incorrect");
+            }
+
+            const isMatch = await bcrypt.compare(password, user.password);
+
+            if (!isMatch) {
+                return ApiResponse.badRequest(res, "Email ou mot de passe incorrect");
+            }
+
+            return ApiResponse.success(res, "Connexion réussie", user);
+
+        } catch (error) {
+            return ApiResponse.error(res, "Erreur lors de la connexion", null, 500, error.message);
         }
     }
 }

@@ -125,18 +125,25 @@ export default async function BeerDetailPage({
               </div>
             </div>
 
-            <div className="mb-10">
-              <span className="block text-gray-500 text-sm uppercase tracking-wide mb-2">
-                Prix HT
-              </span>
-              <span className="text-5xl font-bold text-green-700">
-                {beer.prix_ht.toFixed(2)} €
-              </span>
-              {beer.prix_15 && (
-                <span className="block text-gray-600 mt-2">
-                  Prix pour 15 cl : {beer.prix_15.toFixed(2)} €
-                </span>
-              )}
+            <div className="flex gap-65 mb-10">
+                <div>
+                    <span className="block text-gray-500 text-sm uppercase tracking-wide mb-2">
+                        Prix HT
+                    </span>
+                    <span className="block text-gray-600 mt-2">
+                        {beer.prix_ht.toFixed(2)} €
+                    </span>
+                </div>
+                <div>
+                    <span className="block text-gray-600 mt-2">
+                        Prix ( TTC ) pour {beer.volume} cl :
+                        </span>
+                    {beer.prix_15 && (
+                        <span className='text-5xl font-bold text-green-700'>
+                            {beer.prix_15.toFixed(2)} €
+                        </span>
+                    )}
+                </div>
             </div>
 
             {/* Boutons d'action (à développer plus tard) */}

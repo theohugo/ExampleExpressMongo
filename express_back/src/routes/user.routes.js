@@ -15,6 +15,8 @@ user_router.get('/stats', userController.getStats);
 // GET http://localhost:5000/api/users/:id
 user_router.get('/:id', userController.getById);
 
+user_router.post('/login', userController.login);
+
 // POST http://localhost:5000/api/users
 user_router.post('/', validate(validateCreateUserPayload), userController.create);
 
