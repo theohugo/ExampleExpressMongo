@@ -20,17 +20,11 @@ export function validateCreateUserPayload(payload) {
     if (typeof payload.email === 'string' && !EMAIL_REGEX.test(payload.email)) {
         errors.push('email invalide');
     }
-    if (payload.age !== undefined && (!Number.isInteger(payload.age) || payload.age < 18 || payload.age > 150)) {
-        errors.push('age doit etre un entier entre 18 et 150');
-    }
     if (payload.telephone !== undefined && (typeof payload.telephone !== 'string' || !PHONE_REGEX.test(payload.telephone))) {
         errors.push('telephone doit contenir 10 chiffres');
     }
     if (payload.role !== undefined && !ALLOWED_ROLES.has(payload.role)) {
         errors.push('role invalide');
-    }
-    if (payload.adresse !== undefined && !isObject(payload.adresse)) {
-        errors.push('adresse doit etre un objet');
     }
 
     return errors;
@@ -48,9 +42,6 @@ export function validateUpdateUserPayload(payload) {
     if (typeof payload.email === 'string' && !EMAIL_REGEX.test(payload.email)) {
         errors.push('email invalide');
     }
-    if (payload.age !== undefined && (!Number.isInteger(payload.age) || payload.age < 18 || payload.age > 150)) {
-        errors.push('age doit etre un entier entre 18 et 150');
-    }
     if (payload.telephone !== undefined && (typeof payload.telephone !== 'string' || !PHONE_REGEX.test(payload.telephone))) {
         errors.push('telephone doit contenir 10 chiffres');
     }
@@ -59,9 +50,6 @@ export function validateUpdateUserPayload(payload) {
     }
     if (payload.actif !== undefined && typeof payload.actif !== 'boolean') {
         errors.push('actif doit etre un booleen');
-    }
-    if (payload.adresse !== undefined && !isObject(payload.adresse)) {
-        errors.push('adresse doit etre un objet');
     }
 
     return errors;

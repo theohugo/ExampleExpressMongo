@@ -1,3 +1,4 @@
+import Beer from '../model/beer.model.js';
 import ApiResponse from '../utils/apiResponse.js';
 import beerRepository from '../repositories/beer.repository.js';
 import { isValidObjectId } from '../utils/mongo.util.js';
@@ -87,15 +88,54 @@ class BeerController {
     }
 
     async getAll(req, res) {
-        try {
-            const { page, limit } = parsePagination(req.query);
-            const filters = buildBeerFilters(req.query);
+    try {
+        const { page = 1, limit = 20, q = '', couleur } = req.query;
 
-            const result = await beerRepository.findAll(filters, page, limit);
-            return ApiResponse.success(res, 'Liste des bieres recuperee', result);
-        } catch (error) {
-            return ApiResponse.error(res, 'Erreur lors de la recuperation des bieres', null, 500, error.message);
+        const query = {};
+
+        // 🔎 Recherche texte
+        if (q && q.trim() !== '') {
+        const searchRegex = new RegExp(q.trim(), 'i');
+        query.$or = [
+            { nom_article: searchRegex },
+            { nom_marque: searchRegex },
+            { type: searchRegex },
+        ];
         }
+
+        // 🎨 Filtre couleur
+        if (couleur && couleur.trim() !== '') {
+        const colorsArray = couleur.split(',').map(c => c.trim());
+        query.couleur = { $in: colorsArray };
+        }
+
+        const skip = (Number(page) - 1) * Number(limit);
+
+        const items = await Beer.find(query)
+        .skip(skip)
+        .limit(Number(limit))
+        .lean();
+
+        const total = await Beer.countDocuments(query);
+
+        res.json({
+        success: true,
+        message: q ? 'Résultats de recherche' : 'Liste des bières récupérée',
+        data: {
+            items,
+            pagination: {
+            page: Number(page),
+            limit: Number(limit),
+            total,
+            totalPages: Math.ceil(total / Number(limit)) || 1,
+            },
+        },
+        timestamp: new Date().toISOString(),
+        });
+    } catch (err) {
+        console.error('Erreur dans getAll:', err);
+        res.status(500).json({ success: false, message: err.message || 'Erreur serveur' });
+    }
     }
 
     async getById(req, res) {
@@ -122,6 +162,25 @@ class BeerController {
             return ApiResponse.success(res, 'Statistiques des bieres', stats);
         } catch (error) {
             return ApiResponse.error(res, 'Erreur lors de la recuperation des statistiques', null, 500, error.message);
+        }
+    }
+
+    async getColors(req, res) {
+        try {
+            const colors = await Beer.aggregate([
+            { $group: { _id: '$couleur', count: { $sum: 1 } } },
+            { $project: { _id: 0, couleur: '$_id', count: 1 } },
+            { $sort: { count: -1 } },
+            ]);
+
+            res.json({
+            success: true,
+            message: 'Couleurs des bières récupérées',
+            data: colors,
+            });
+        } catch (err) {
+            console.error('Erreur getColors:', err);
+            res.status(500).json({ success: false, message: err.message });
         }
     }
 }

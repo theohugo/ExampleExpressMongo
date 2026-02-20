@@ -12,17 +12,31 @@ function buildOrderFilters(query) {
     return filters;
 }
 
+function resolveClientId(req) {
+    return String(
+        req.headers['x-user-id']
+        || req.body?.userId
+        || req.query?.userId
+        || ''
+    ).trim();
+}
+
 class OrderController {
     async create(req, res) {
         try {
             const { customer, items, notes } = req.body;
+            const clientId = resolveClientId(req);
 
             if (!orderBuilderService.validateCustomer(customer)) {
                 return ApiResponse.badRequest(res, 'Le client doit contenir name et address');
             }
+            if (!isValidObjectId(clientId)) {
+                return ApiResponse.badRequest(res, 'userId client invalide');
+            }
             const { items: orderItems, totalAmount } = await orderBuilderService.buildOrderLines(items);
 
             const createdOrder = await orderRepository.create({
+                client: clientId,
                 customer,
                 items: orderItems,
                 totalAmount,
