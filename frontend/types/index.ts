@@ -29,14 +29,7 @@ export interface User {
   prenom: string;
   email: string;
   role: UserRole;
-  age?: number;
   telephone?: string;
-  adresse?: {
-    rue?: string;
-    ville?: string;
-    codePostal?: string;
-    pays?: string;
-  };
 }
 
 export interface CartItem {

@@ -45,11 +45,7 @@ export default function CartPage() {
     }
 
     setCustomerName(`${currentUser.prenom} ${currentUser.nom}`.trim());
-    setCustomerAddress(
-      [currentUser.adresse?.rue, currentUser.adresse?.codePostal, currentUser.adresse?.ville, currentUser.adresse?.pays]
-        .filter(Boolean)
-        .join(" ")
-    );
+    setCustomerAddress("");
 
     loadCart(currentUser)
       .catch((error) => alert(error instanceof Error ? error.message : "Erreur panier"))

@@ -38,16 +38,9 @@ async function upsertFixtureUsers() {
             prenom: 'Fixture',
             email: 'fixture.vendeur@mongoapi.local',
             password: 'fixture123',
-            age: 30,
             telephone: '0612345678',
             actif: true,
             role: 'VENDEUR',
-            adresse: {
-                rue: '1 Rue des Brasseurs',
-                ville: 'Lille',
-                codePostal: '59000',
-                pays: 'France',
-            },
         },
         { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }
     );
@@ -59,16 +52,9 @@ async function upsertFixtureUsers() {
             prenom: 'Fixture',
             email: 'fixture.client@mongoapi.local',
             password: 'fixture123',
-            age: 28,
             telephone: '0698765432',
             actif: true,
             role: 'CLIENT',
-            adresse: {
-                rue: '10 Avenue des Tests',
-                ville: 'Paris',
-                codePostal: '75010',
-                pays: 'France',
-            },
         },
         { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }
     );
