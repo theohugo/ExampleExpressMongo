@@ -14,7 +14,7 @@ class CartRepository {
             { cartId },
             data,
             {
-                new: true,
+                returnDocument: 'after',
                 upsert: true,
                 runValidators: true,
                 setDefaultsOnInsert: true,
