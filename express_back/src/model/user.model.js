@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
         match: [/^\S+@\S+\.\S+$/, 'Email invalide']
     },
 
-    password: {   // 🔐 recommandé pour auth
+    password: {   
         type: String,
         required: [true, 'Le mot de passe est requis'],
         minlength: [6, 'Le mot de passe doit contenir au moins 6 caractères']
