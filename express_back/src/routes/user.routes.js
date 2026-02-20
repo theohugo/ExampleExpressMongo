@@ -23,7 +23,7 @@ user_router.post('/', validate(validateCreateUserPayload), userController.create
 // PUT http://localhost:5000/api/users/:id
 user_router.put('/:id', validate(validateUpdateUserPayload), userController.update);
 
-
+// DELETE http://localhost:5000/api/users/:id
 user_router.delete('/:id', userController.remove);
 
 export default user_router;
