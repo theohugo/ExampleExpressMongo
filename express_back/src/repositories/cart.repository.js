@@ -1,8 +1,12 @@
 import Cart from '../model/cart.model.js';
 
 class CartRepository {
-    async findByCartId(cartId) {
-        return Cart.findOne({ cartId });
+    async findByCartId(cartId, client = null) {
+        const filters = { cartId };
+        if (client) {
+            filters.client = client;
+        }
+        return Cart.findOne(filters);
     }
 
     async upsertByCartId(cartId, data) {

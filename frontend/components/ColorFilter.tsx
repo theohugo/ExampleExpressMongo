@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { API_BASE_URL } from '@/lib/api/config';
 
 interface ColorOption {
   couleur: string;
@@ -23,7 +24,7 @@ export default function ColorFilter({ currentColors = [] }: ColorFilterProps) {
 
   // Charger les couleurs au montage du composant
   useEffect(() => {
-    fetch('http://localhost:5000/api/beers/colors')
+    fetch(`${API_BASE_URL}/api/beers/colors`)
       .then(res => res.json())
       .then(data => {
         if (data.success) {

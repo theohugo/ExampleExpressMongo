@@ -4,6 +4,7 @@ import BeerCard from '@/components/BeerCard';
 import Link from 'next/link';
 import { Search } from 'lucide-react';
 import ColorFilter from '@/components/ColorFilter';
+import { API_BASE_URL } from '@/lib/api/config';
 
 const ITEMS_PER_PAGE = 12;
 
@@ -23,7 +24,7 @@ async function getBeers(page: number = 1, limit: number = ITEMS_PER_PAGE, q: str
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/beers?${queryParams.toString()}`,
+      `${API_BASE_URL}/api/beers?${queryParams.toString()}`,
       { cache: 'no-store' }
     );
 
